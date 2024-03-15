@@ -1,48 +1,47 @@
 package org.example;
 import java.lang.reflect.Field;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationTargetException;
 
 public class Generator {
     private static long StartTime;
-    private static long m = (long)Math.pow(2, 31);
-    private static long a = 214013;
-    private static long c = 2531011;
+    private static final long m = (long)Math.pow(2, 31);
+    private static final long a = 214013;
+    private static final long c = 2531011;
     public Generator()
     {
         StartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
     }
-    public static <T> void Generate(T some_obj){
-        Field[] ClassFields = some_obj.getClass().getDeclaredFields();
-        for (Field classField : ClassFields) {
+    public static <T> void Generate(T targetClassInstance){
+        Field[] targetClassFields = targetClassInstance.getClass().getDeclaredFields();
+        for (Field classField : targetClassFields) {
             classField.setAccessible(true);
-            switch (classField.getType().toString()) {
-                case "class java.lang.String" -> {
+            if(classField.getType().equals(String.class)) {
                     int len = (int) (GenerateLong() % 50);
                     char[] str = new char[len];
                     for (int i = 0; i < len; i++) {
                         str[i] = (char) ('a' + (GenerateLong() % 26));
                     }
                     try {
-                        classField.set(some_obj, new String(str));
+                        classField.set(targetClassInstance, new String(str));
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                case "int" -> {
+            }
+            else if(classField.getType().equals(int.class)) {
 
                     try {
-                        classField.set(some_obj, (int) GenerateLong() % Integer.MAX_VALUE);
+                        classField.set(targetClassInstance, (int) GenerateLong() % Integer.MAX_VALUE);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                case "long" -> {
+            }
+            else if(classField.getType().equals(long.class)) {
                     try {
-                        classField.set(some_obj, GenerateLong());
+                        classField.set(targetClassInstance, GenerateLong());
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                }
             }
         }
     }
