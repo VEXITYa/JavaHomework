@@ -11,39 +11,89 @@ public class Generator {
     {
         StartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
     }
-    public static <T> void Generate(T some_obj){
-        Field[] ClassFields = some_obj.getClass().getDeclaredFields();
-        for (Field classField : ClassFields) {
-            classField.setAccessible(true);
-            switch (classField.getType().toString()) {
-                case "class java.lang.String" -> {
+    public static <T> void Generate(T targetClassInstance){
+        Field[] ClassFields = targetClassInstance.getClass().getDeclaredFields();
+        for (Field targetClassField : ClassFields) {
+            targetClassField.setAccessible(true);
+            if (targetClassField.getType().equals(String.class)){
                     int len = (int) (GenerateLong() % 50);
-                    char[] str = new char[len];
+                    char[] resString = new char[len];
                     for (int i = 0; i < len; i++) {
-                        str[i] = (char) ('a' + (GenerateLong() % 26));
+                        resString[i] = (char) ('a' + (GenerateLong() % 26));
                     }
                     try {
-                        classField.set(some_obj, new String(str));
+                        targetClassField.set(targetClassInstance, new String(resString));
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                }
-                case "int" -> {
-
-                    try {
-                        classField.set(some_obj, (int) GenerateLong() % Integer.MAX_VALUE);
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                case "long" -> {
-                    try {
-                        classField.set(some_obj, GenerateLong());
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+            }
+            else if (targetClassField.getType().equals(char.class)){
+                try {
+                    targetClassField.set(targetClassInstance, (char) ('a' + (GenerateLong() % 26)));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
                 }
             }
+            else if (targetClassField.getType().equals(int.class)){
+
+                    try {
+                        targetClassField.set(targetClassInstance, (int) (GenerateLong() % Integer.MAX_VALUE));
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+            }
+            else if (targetClassField.getType().equals(long.class)){
+                    try {
+                        targetClassField.set(targetClassInstance, GenerateLong());
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+            }
+            else if (targetClassField.getType().equals(short.class)){
+                try {
+                    targetClassField.set(targetClassInstance, (short) (GenerateLong() % Short.MAX_VALUE));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (targetClassField.getType().equals(byte.class)){
+                try {
+                    targetClassField.set(targetClassInstance, (byte) (GenerateLong() % Byte.MAX_VALUE));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (targetClassField.getType().equals(boolean.class)){
+                try {
+                    if(GenerateLong() % 2 != 1)
+                    {
+                        targetClassField.set(targetClassInstance, false);
+                    }
+                    else
+                    {
+                        targetClassField.set(targetClassInstance, true);
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (targetClassField.getType().equals(double.class)){
+                try {
+                    short point = (short)(GenerateLong() % 18);
+                    targetClassField.set(targetClassInstance, (double) (GenerateLong() * Math.pow(0.1, point)));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if (targetClassField.getType().equals(float.class)){
+                try {
+                    short point = (short)(GenerateLong() % 9);
+                    targetClassField.set(targetClassInstance, (float) (GenerateLong() * Math.pow(0.1, point)));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
         }
     }
 
