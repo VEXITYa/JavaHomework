@@ -3,69 +3,45 @@ import java.lang.reflect.Field;
 import java.lang.management.ManagementFactory;
 
 public class Generator {
-    private static long StartTime;
-    private static long m = (long)Math.pow(2, 31);
-    private static long a = 214013;
-    private static long c = 2531011;
+    private static long startTime;
+    private static final long m = (long)Math.pow(2, 31);
+    private static final long a = 214013;
+    private static final long c = 2531011;
     public Generator()
     {
-        StartTime = ManagementFactory.getRuntimeMXBean().getStartTime();
+        startTime = ManagementFactory.getRuntimeMXBean().getStartTime();
     }
-    public static <T> void Generate(T targetClassInstance){
-        Field[] ClassFields = targetClassInstance.getClass().getDeclaredFields();
-        for (Field targetClassField : ClassFields) {
+    public static <T> void generate(T targetClassInstance){
+        Field[] classFields = targetClassInstance.getClass().getDeclaredFields();
+        for (Field targetClassField : classFields) {
             targetClassField.setAccessible(true);
-            if (targetClassField.getType().equals(String.class)){
-                    int len = (int) (GenerateLong() % 50);
+            try
+            {
+                if (targetClassField.getType().equals(String.class)){
+                    int len = (int) (generateLong() % 50);
                     char[] resString = new char[len];
                     for (int i = 0; i < len; i++) {
-                        resString[i] = (char) ('a' + (GenerateLong() % 26));
+                        resString[i] = (char) ('a' + (generateLong() % 26));
                     }
-                    try {
-                        targetClassField.set(targetClassInstance, new String(resString));
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-            }
-            else if (targetClassField.getType().equals(char.class)){
-                try {
-                    targetClassField.set(targetClassInstance, (char) ('a' + (GenerateLong() % 26)));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    targetClassField.set(targetClassInstance, new String(resString));
                 }
-            }
-            else if (targetClassField.getType().equals(int.class)){
-
-                    try {
-                        targetClassField.set(targetClassInstance, (int) (GenerateLong() % Integer.MAX_VALUE));
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-            }
-            else if (targetClassField.getType().equals(long.class)){
-                    try {
-                        targetClassField.set(targetClassInstance, GenerateLong());
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-            }
-            else if (targetClassField.getType().equals(short.class)){
-                try {
-                    targetClassField.set(targetClassInstance, (short) (GenerateLong() % Short.MAX_VALUE));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                else if (targetClassField.getType().equals(char.class)){
+                    targetClassField.set(targetClassInstance, (char) ('a' + (generateLong() % 26)));
                 }
-            }
-            else if (targetClassField.getType().equals(byte.class)){
-                try {
-                    targetClassField.set(targetClassInstance, (byte) (GenerateLong() % Byte.MAX_VALUE));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                else if (targetClassField.getType().equals(int.class)){
+                    targetClassField.set(targetClassInstance, (int) (generateLong() % Integer.MAX_VALUE));
                 }
-            }
-            else if (targetClassField.getType().equals(boolean.class)){
-                try {
-                    if(GenerateLong() % 2 != 1)
+                else if (targetClassField.getType().equals(long.class)){
+                    targetClassField.set(targetClassInstance, generateLong());
+                }
+                else if (targetClassField.getType().equals(short.class)){
+                    targetClassField.set(targetClassInstance, (short) (generateLong() % Short.MAX_VALUE));
+                }
+                else if (targetClassField.getType().equals(byte.class)){
+                    targetClassField.set(targetClassInstance, (byte) (generateLong() % Byte.MAX_VALUE));
+                }
+                else if (targetClassField.getType().equals(boolean.class)){
+                    if(generateLong() % 2 != 1)
                     {
                         targetClassField.set(targetClassInstance, false);
                     }
@@ -73,34 +49,26 @@ public class Generator {
                     {
                         targetClassField.set(targetClassInstance, true);
                     }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                }
+                else if (targetClassField.getType().equals(double.class)){
+                    short point = (short)(generateLong() % 18);
+                    targetClassField.set(targetClassInstance, (double) (generateLong() * Math.pow(0.1, point)));
+                }
+                else if (targetClassField.getType().equals(float.class)){
+                    short point = (short)(generateLong() % 9);
+                    targetClassField.set(targetClassInstance, (float) (generateLong() * Math.pow(0.1, point)));
                 }
             }
-            else if (targetClassField.getType().equals(double.class)){
-                try {
-                    short point = (short)(GenerateLong() % 18);
-                    targetClassField.set(targetClassInstance, (double) (GenerateLong() * Math.pow(0.1, point)));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
+            catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
-            else if (targetClassField.getType().equals(float.class)){
-                try {
-                    short point = (short)(GenerateLong() % 9);
-                    targetClassField.set(targetClassInstance, (float) (GenerateLong() * Math.pow(0.1, point)));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
         }
     }
 
-    public static long GenerateLong()
+    public static long generateLong()
     {
-        long buf = (a * StartTime + c) % m;
-        StartTime = buf;
+        long buf = (a * startTime + c) % m;
+        startTime = buf;
         return buf;
     }
 }

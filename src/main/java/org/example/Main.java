@@ -6,13 +6,13 @@ import java.lang.reflect.Field;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        Test TestClassInstance = new Test();
-        Generator.Generate(TestClassInstance);
-        Field[] TestClassFields = TestClassInstance.getClass().getDeclaredFields();
+        Test testClassInstance = new Test();
+        Generator.generate(testClassInstance);
+        Field[] TestClassFields = testClassInstance.getClass().getDeclaredFields();
         for (Field TestClassField : TestClassFields) {
             TestClassField.setAccessible(true);
             try {
-                System.out.println(TestClassField.get(TestClassInstance));
+                System.out.println(TestClassField.get(testClassInstance));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
